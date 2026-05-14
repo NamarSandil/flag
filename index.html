@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تحدي الأعلام | Flag Challenge</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', Tahoma, sans-serif; }
+  body {
+    min-height:100vh;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #6a3093 100%);
+    display:flex; align-items:center; justify-content:center;
+    padding:20px; color:#fff;
+  }
+  .container {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(15px);
+    border:1px solid rgba(255,255,255,0.2);
+    border-radius:24px;
+    padding:30px;
+    max-width:560px; width:100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .top-bar {
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:20px; flex-wrap:wrap; gap:10px;
+  }
+  .lang-switch {
+    display:flex; gap:6px;
+  }
+  .lang-btn {
+    padding:6px 12px; border:none; border-radius:20px;
+    background: rgba(255,255,255,0.15); color:#fff;
+    cursor:pointer; font-size:13px; transition:0.3s;
+  }
+  .lang-btn.active { background:#fff; color:#2a5298; font-weight:bold; }
+  .sound-toggle {
+    background: rgba(255,255,255,0.15); border:none; color:#fff;
+    width:40px; height:40px; border-radius:50%; cursor:pointer;
+    font-size:18px; transition:0.3s;
+  }
+  .sound-toggle:hover { background: rgba(255,255,255,0.3); }
+  h1 {
+    text-align:center; font-size:26px; margin-bottom:10px;
+    background: linear-gradient(90deg, #ffd700, #ff6b6b);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .stats {
+    display:flex; justify-content:space-around; margin-bottom:20px;
+    background: rgba(0,0,0,0.2); padding:12px; border-radius:14px;
+  }
+  .stat { text-align:center; }
+  .stat-label { font-size:12px; opacity:0.8; }
+  .stat-value { font-size:22px; font-weight:bold; }
+  .flag-wrap {
+    background:#fff; border-radius:14px; padding:20px;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:20px; min-height:200px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  .flag-wrap img {
+    max-width:100%; max-height:180px;
+    border:2px solid #ddd; border-radius:6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .question {
+    text-align:center; font-size:18px; margin-bottom:16px;
+    font-weight:500;
+  }
+  .options {
+    display:grid; grid-template-columns:1fr 1fr; gap:12px;
+    margin-bottom:18px;
+  }
+  .option {
+    padding:14px; border:2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1); color:#fff;
+    border-radius:12px; cursor:pointer; font-size:15px;
+    transition:0.3s; font-weight:500;
+  }
+  .option:hover:not(:disabled) {
+    background: rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+  }
+  .option.correct { background:#27ae60; border-color:#27ae60; animation:pulse 0.5s; }
+  .option.wrong { background:#e74c3c; border-color:#e74c3c; animation:shake 0.5s; }
+  .option:disabled { cursor:not-allowed; }
+  @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
+  @keyframes shake {
+    0%,100%{transform:translateX(0);}
+    25%{transform:translateX(-8px);} 75%{transform:translateX(8px);}
+  }
+  .next-btn {
+    width:100%; padding:14px; border:none; border-radius:12px;
+    background: linear-gradient(90deg, #ffd700, #ff6b6b);
+    color:#fff; font-size:16px; font-weight:bold; cursor:pointer;
+    transition:0.3s;
+  }
+  .next-btn:hover { transform: translateY(-2px); box-shadow:0 8px 20px rgba(255,107,107,0.4); }
+  .feedback {
+    text-align:center; margin-top:12px; min-height:24px;
+    font-weight:bold; font-size:16px;
+  }
+  .feedback.correct-text { color:#2ecc71; }
+  .feedback.wrong-text { color:#ff6b6b; }
+  @media (max-width:480px) {
+    .options { grid-template-columns:1fr; }
+    h1 { font-size:22px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="ar">العربية</button>
+      <button class="lang-btn" data-lang="en">English</button>
+      <button class="lang-btn" data-lang="fr">Français</button>
+      <button class="lang-btn" data-lang="es">Español</button>
+    </div>
+    <button class="sound-toggle" id="soundToggle" title="Sound">🔊</button>
+  </div>
+
+  <h1 id="title">🚩 تحدي الأعلام</h1>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-label" id="lblScore">النقاط</div>
+      <div class="stat-value" id="score">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label" id="lblStreak">المتتالية</div>
+      <div class="stat-value" id="streak">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label" id="lblRound">الجولة</div>
+      <div class="stat-value" id="round">1</div>
+    </div>
+  </div>
+
+  <div class="flag-wrap">
+    <img id="flagImg" src="" alt="flag">
+  </div>
+
+  <div class="question" id="question">ما اسم هذه الدولة؟</div>
+
+  <div class="options" id="options"></div>
+
+  <div class="feedback" id="feedback"></div>
+
+  <button class="next-btn" id="nextBtn" style="display:none;">التالي ←</button>
+</div>
+
+<script>
+const countries = [
+  { code:'sa', ar:'السعودية', en:'Saudi Arabia', fr:'Arabie Saoudite', es:'Arabia Saudita' },
+  { code:'eg', ar:'مصر', en:'Egypt', fr:'Égypte', es:'Egipto' },
+  { code:'ae', ar:'الإمارات', en:'UAE', fr:'Émirats Arabes Unis', es:'Emiratos Árabes' },
+  { code:'jo', ar:'الأردن', en:'Jordan', fr:'Jordanie', es:'Jordania' },
+  { code:'ma', ar:'المغرب', en:'Morocco', fr:'Maroc', es:'Marruecos' },
+  { code:'tn', ar:'تونس', en:'Tunisia', fr:'Tunisie', es:'Túnez' },
+  { code:'dz', ar:'الجزائر', en:'Algeria', fr:'Algérie', es:'Argelia' },
+  { code:'qa', ar:'قطر', en:'Qatar', fr:'Qatar', es:'Catar' },
+  { code:'kw', ar:'الكويت', en:'Kuwait', fr:'Koweït', es:'Kuwait' },
+  { code:'lb', ar:'لبنان', en:'Lebanon', fr:'Liban', es:'Líbano' },
+  { code:'sy', ar:'سوريا', en:'Syria', fr:'Syrie', es:'Siria' },
+  { code:'iq', ar:'العراق', en:'Iraq', fr:'Irak', es:'Irak' },
+  { code:'ye', ar:'اليمن', en:'Yemen', fr:'Yémen', es:'Yemen' },
+  { code:'om', ar:'عُمان', en:'Oman', fr:'Oman', es:'Omán' },
+  { code:'bh', ar:'البحرين', en:'Bahrain', fr:'Bahreïn', es:'Baréin' },
+  { code:'ps', ar:'فلسطين', en:'Palestine', fr:'Palestine', es:'Palestina' },
+  { code:'tr', ar:'تركيا', en:'Turkey', fr:'Turquie', es:'Turquía' },
+  { code:'us', ar:'أمريكا', en:'USA', fr:'États-Unis', es:'Estados Unidos' },
+  { code:'gb', ar:'بريطانيا', en:'UK', fr:'Royaume-Uni', es:'Reino Unido' },
+  { code:'fr', ar:'فرنسا', en:'France', fr:'France', es:'Francia' },
+  { code:'de', ar:'ألمانيا', en:'Germany', fr:'Allemagne', es:'Alemania' },
+  { code:'it', ar:'إيطاليا', en:'Italy', fr:'Italie', es:'Italia' },
+  { code:'es', ar:'إسبانيا', en:'Spain', fr:'Espagne', es:'España' },
+  { code:'pt', ar:'البرتغال', en:'Portugal', fr:'Portugal', es:'Portugal' },
+  { code:'nl', ar:'هولندا', en:'Netherlands', fr:'Pays-Bas', es:'Países Bajos' },
+  { code:'be', ar:'بلجيكا', en:'Belgium', fr:'Belgique', es:'Bélgica' },
+  { code:'ch', ar:'سويسرا', en:'Switzerland', fr:'Suisse', es:'Suiza' },
+  { code:'se', ar:'السويد', en:'Sweden', fr:'Suède', es:'Suecia' },
+  { code:'no', ar:'النرويج', en:'Norway', fr:'Norvège', es:'Noruega' },
+  { code:'fi', ar:'فنلندا', en:'Finland', fr:'Finlande', es:'Finlandia' },
+  { code:'dk', ar:'الدنمارك', en:'Denmark', fr:'Danemark', es:'Dinamarca' },
+  { code:'ru', ar:'روسيا', en:'Russia', fr:'Russie', es:'Rusia' },
+  { code:'cn', ar:'الصين', en:'China', fr:'Chine', es:'China' },
+  { code:'jp', ar:'اليابان', en:'Japan', fr:'Japon', es:'Japón' },
+  { code:'kr', ar:'كوريا الجنوبية', en:'South Korea', fr:'Corée du Sud', es:'Corea del Sur' },
+  { code:'in', ar:'الهند', en:'India', fr:'Inde', es:'India' },
+  { code:'br', ar:'البرازيل', en:'Brazil', fr:'Brésil', es:'Brasil' },
+  { code:'ar', ar:'الأرجنتين', en:'Argentina', fr:'Argentine', es:'Argentina' },
+  { code:'mx', ar:'المكسيك', en:'Mexico', fr:'Mexique', es:'México' },
+  { code:'ca', ar:'كندا', en:'Canada', fr:'Canada', es:'Canadá' },
+  { code:'au', ar:'أستراليا', en:'Australia', fr:'Australie', es:'Australia' },
+  { code:'za', ar:'جنوب أفريقيا', en:'South Africa', fr:'Afrique du Sud', es:'Sudáfrica' },
+  { code:'ng', ar:'نيجيريا', en:'Nigeria', fr:'Nigeria', es:'Nigeria' },
+  { code:'ke', ar:'كينيا', en:'Kenya', fr:'Kenya', es:'Kenia' },
+  { code:'pk', ar:'باكستان', en:'Pakistan', fr:'Pakistan', es:'Pakistán' },
+  { code:'id', ar:'إندونيسيا', en:'Indonesia', fr:'Indonésie', es:'Indonesia' },
+  { code:'th', ar:'تايلاند', en:'Thailand', fr:'Thaïlande', es:'Tailandia' },
+  { code:'gr', ar:'اليونان', en:'Greece', fr:'Grèce', es:'Grecia' }
+];
+
+const translations = {
+  ar:{ title:'🚩 تحدي الأعلام', question:'ما اسم هذه الدولة؟', score:'النقاط', streak:'المتتالية', round:'الجولة', next:'التالي ←', correct:'✅ إجابة صحيحة!', wrong:'❌ خطأ! الجواب:', dir:'rtl' },
+  en:{ title:'🚩 Flag Challenge', question:'Which country is this?', score:'Score', streak:'Streak', round:'Round', next:'Next →', correct:'✅ Correct!', wrong:'❌ Wrong! Answer:', dir:'ltr' },
+  fr:{ title:'🚩 Défi des Drapeaux', question:'Quel est ce pays?', score:'Points', streak:'Série', round:'Tour', next:'Suivant →', correct:'✅ Correct!', wrong:'❌ Faux! Réponse:', dir:'ltr' },
+  es:{ title:'🚩 Desafío de Banderas', question:'¿Qué país es este?', score:'Puntos', streak:'Racha', round:'Ronda', next:'Siguiente →', correct:'✅ ¡Correcto!', wrong:'❌ ¡Mal! Respuesta:', dir:'ltr' }
+};
+
+let currentLang = 'ar';
+let soundOn = true;
+let score = 0, streak = 0, round = 1;
+let currentCountry = null;
+let answered = false;
+
+const audioCtx = window.AudioContext ? new (window.AudioContext || window.webkitAudioContext)() : null;
+function playTone(freq, duration, type='sine') {
+  if (!soundOn || !audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type; osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + duration);
+}
+function soundCorrect() {
+  playTone(523, 0.15); setTimeout(()=>playTone(659, 0.15), 120); setTimeout(()=>playTone(784, 0.25), 240);
+}
+function soundWrong() {
+  playTone(220, 0.2, 'sawtooth'); setTimeout(()=>playTone(180, 0.3, 'sawtooth'), 150);
+}
+function soundClick() { playTone(440, 0.08); }
+
+function speak(text, lang) {
+  if (!soundOn || !window.speechSynthesis) return;
+  const u = new SpeechSynthesisUtterance(text);
+  const langMap = { ar:'ar-SA', en:'en-US', fr:'fr-FR', es:'es-ES' };
+  u.lang = langMap[lang] || 'en-US';
+  u.rate = 0.95;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i>0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function applyLang() {
+  const t = translations[currentLang];
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = t.dir;
+  document.getElementById('title').textContent = t.title;
+  document.getElementById('question').textContent = t.question;
+  document.getElementById('lblScore').textContent = t.score;
+  document.getElementById('lblStreak').textContent = t.streak;
+  document.getElementById('lblRound').textContent = t.round;
+  document.getElementById('nextBtn').textContent = t.next;
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === currentLang);
+  });
+}
+
+function newRound() {
+  answered = false;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  currentCountry = countries[Math.floor(Math.random()*countries.length)];
+  document.getElementById('flagImg').src = `https://flagcdn.com/w320/${currentCountry.code}.png`;
+  document.getElementById('flagImg').alt = currentCountry[currentLang];
+
+  const wrong = shuffle(countries.filter(c => c.code !== currentCountry.code)).slice(0,3);
+  const opts = shuffle([currentCountry, ...wrong]);
+
+  const optsEl = document.getElementById('options');
+  optsEl.innerHTML = '';
+  opts.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.textContent = c[currentLang];
+    btn.onclick = () => answer(btn, c);
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('round').textContent = round;
+}
+
+function answer(btn, choice) {
+  if (answered) return;
+  answered = true;
+  soundClick();
+  const t = translations[currentLang];
+  const correct = choice.code === currentCountry.code;
+  document.querySelectorAll('.option').forEach(b => {
+    b.disabled = true;
+    if (b.textContent === currentCountry[currentLang]) b.classList.add('correct');
+  });
+  if (correct) {
+    score += 10 + streak*2;
+    streak++;
+    document.getElementById('feedback').textContent = t.correct;
+    document.getElementById('feedback').className = 'feedback correct-text';
+    soundCorrect();
+    speak(currentCountry[currentLang], currentLang);
+  } else {
+    btn.classList.add('wrong');
+    streak = 0;
+    document.getElementById('feedback').textContent = `${t.wrong} ${currentCountry[currentLang]}`;
+    document.getElementById('feedback').className = 'feedback wrong-text';
+    soundWrong();
+    setTimeout(() => speak(currentCountry[currentLang], currentLang), 600);
+  }
+  document.getElementById('score').textContent = score;
+  document.getElementById('streak').textContent = streak;
+  document.getElementById('nextBtn').style.display = 'block';
+}
+
+document.getElementById('nextBtn').onclick = () => { round++; newRound(); soundClick(); };
+
+document.querySelectorAll('.lang-btn').forEach(b => {
+  b.onclick = () => { currentLang = b.dataset.lang; applyLang(); newRound(); soundClick(); };
+});
+
+document.getElementById('soundToggle').onclick = (e) => {
+  soundOn = !soundOn;
+  e.target.textContent = soundOn ? '🔊' : '🔇';
+  if (!soundOn) window.speechSynthesis?.cancel();
+};
+
+applyLang();
+newRound();
+</script>
+</body>
+</html>
