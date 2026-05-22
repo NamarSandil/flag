@@ -114,10 +114,16 @@
     <div class="lang-switch">
       <button class="lang-btn active" data-lang="ar">العربية</button>
       <button class="lang-btn" data-lang="en">English</button>
-      <button class="lang-btn" data-lang="fr">Français</button>
-      <button class="lang-btn" data-lang="es">Español</button>
+      <button class="lang-btn" data-lang="de">Deutsch</button>
+      <button class="lang-btn" data-lang="sv">Svenska</button>
     </div>
-    <button class="sound-toggle" id="soundToggle" title="Sound">🔊</button>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <select id="voiceGender" style="padding:6px 10px; border-radius:20px; border:none; background:rgba(255,255,255,0.15); color:#fff; cursor:pointer; font-size:13px;">
+        <option value="female" style="color:#000;">♀ أنثى</option>
+        <option value="male" style="color:#000;">♂ ذكر</option>
+      </select>
+      <button class="sound-toggle" id="soundToggle" title="Sound">🔊</button>
+    </div>
   </div>
 
   <h1 id="title">🚩 تحدي الأعلام</h1>
@@ -152,68 +158,101 @@
 
 <script>
 const countries = [
-  { code:'sa', ar:'السعودية', en:'Saudi Arabia', fr:'Arabie Saoudite', es:'Arabia Saudita' },
-  { code:'eg', ar:'مصر', en:'Egypt', fr:'Égypte', es:'Egipto' },
-  { code:'ae', ar:'الإمارات', en:'UAE', fr:'Émirats Arabes Unis', es:'Emiratos Árabes' },
-  { code:'jo', ar:'الأردن', en:'Jordan', fr:'Jordanie', es:'Jordania' },
-  { code:'ma', ar:'المغرب', en:'Morocco', fr:'Maroc', es:'Marruecos' },
-  { code:'tn', ar:'تونس', en:'Tunisia', fr:'Tunisie', es:'Túnez' },
-  { code:'dz', ar:'الجزائر', en:'Algeria', fr:'Algérie', es:'Argelia' },
-  { code:'qa', ar:'قطر', en:'Qatar', fr:'Qatar', es:'Catar' },
-  { code:'kw', ar:'الكويت', en:'Kuwait', fr:'Koweït', es:'Kuwait' },
-  { code:'lb', ar:'لبنان', en:'Lebanon', fr:'Liban', es:'Líbano' },
-  { code:'sy', ar:'سوريا', en:'Syria', fr:'Syrie', es:'Siria' },
-  { code:'iq', ar:'العراق', en:'Iraq', fr:'Irak', es:'Irak' },
-  { code:'ye', ar:'اليمن', en:'Yemen', fr:'Yémen', es:'Yemen' },
-  { code:'om', ar:'عُمان', en:'Oman', fr:'Oman', es:'Omán' },
-  { code:'bh', ar:'البحرين', en:'Bahrain', fr:'Bahreïn', es:'Baréin' },
-  { code:'ps', ar:'فلسطين', en:'Palestine', fr:'Palestine', es:'Palestina' },
-  { code:'tr', ar:'تركيا', en:'Turkey', fr:'Turquie', es:'Turquía' },
-  { code:'us', ar:'أمريكا', en:'USA', fr:'États-Unis', es:'Estados Unidos' },
-  { code:'gb', ar:'بريطانيا', en:'UK', fr:'Royaume-Uni', es:'Reino Unido' },
-  { code:'fr', ar:'فرنسا', en:'France', fr:'France', es:'Francia' },
-  { code:'de', ar:'ألمانيا', en:'Germany', fr:'Allemagne', es:'Alemania' },
-  { code:'it', ar:'إيطاليا', en:'Italy', fr:'Italie', es:'Italia' },
-  { code:'es', ar:'إسبانيا', en:'Spain', fr:'Espagne', es:'España' },
-  { code:'pt', ar:'البرتغال', en:'Portugal', fr:'Portugal', es:'Portugal' },
-  { code:'nl', ar:'هولندا', en:'Netherlands', fr:'Pays-Bas', es:'Países Bajos' },
-  { code:'be', ar:'بلجيكا', en:'Belgium', fr:'Belgique', es:'Bélgica' },
-  { code:'ch', ar:'سويسرا', en:'Switzerland', fr:'Suisse', es:'Suiza' },
-  { code:'se', ar:'السويد', en:'Sweden', fr:'Suède', es:'Suecia' },
-  { code:'no', ar:'النرويج', en:'Norway', fr:'Norvège', es:'Noruega' },
-  { code:'fi', ar:'فنلندا', en:'Finland', fr:'Finlande', es:'Finlandia' },
-  { code:'dk', ar:'الدنمارك', en:'Denmark', fr:'Danemark', es:'Dinamarca' },
-  { code:'ru', ar:'روسيا', en:'Russia', fr:'Russie', es:'Rusia' },
-  { code:'cn', ar:'الصين', en:'China', fr:'Chine', es:'China' },
-  { code:'jp', ar:'اليابان', en:'Japan', fr:'Japon', es:'Japón' },
-  { code:'kr', ar:'كوريا الجنوبية', en:'South Korea', fr:'Corée du Sud', es:'Corea del Sur' },
-  { code:'in', ar:'الهند', en:'India', fr:'Inde', es:'India' },
-  { code:'br', ar:'البرازيل', en:'Brazil', fr:'Brésil', es:'Brasil' },
-  { code:'ar', ar:'الأرجنتين', en:'Argentina', fr:'Argentine', es:'Argentina' },
-  { code:'mx', ar:'المكسيك', en:'Mexico', fr:'Mexique', es:'México' },
-  { code:'ca', ar:'كندا', en:'Canada', fr:'Canada', es:'Canadá' },
-  { code:'au', ar:'أستراليا', en:'Australia', fr:'Australie', es:'Australia' },
-  { code:'za', ar:'جنوب أفريقيا', en:'South Africa', fr:'Afrique du Sud', es:'Sudáfrica' },
-  { code:'ng', ar:'نيجيريا', en:'Nigeria', fr:'Nigeria', es:'Nigeria' },
-  { code:'ke', ar:'كينيا', en:'Kenya', fr:'Kenya', es:'Kenia' },
-  { code:'pk', ar:'باكستان', en:'Pakistan', fr:'Pakistan', es:'Pakistán' },
-  { code:'id', ar:'إندونيسيا', en:'Indonesia', fr:'Indonésie', es:'Indonesia' },
-  { code:'th', ar:'تايلاند', en:'Thailand', fr:'Thaïlande', es:'Tailandia' },
-  { code:'gr', ar:'اليونان', en:'Greece', fr:'Grèce', es:'Grecia' }
+  { code:'sa', ar:'السعودية', en:'Saudi Arabia', de:'Saudi-Arabien', sv:'Saudiarabien' },
+  { code:'eg', ar:'مصر', en:'Egypt', de:'Ägypten', sv:'Egypten' },
+  { code:'ae', ar:'الإمارات', en:'UAE', de:'Vereinigte Arabische Emirate', sv:'Förenade Arabemiraten' },
+  { code:'jo', ar:'الأردن', en:'Jordan', de:'Jordanien', sv:'Jordanien' },
+  { code:'ma', ar:'المغرب', en:'Morocco', de:'Marokko', sv:'Marocko' },
+  { code:'tn', ar:'تونس', en:'Tunisia', de:'Tunesien', sv:'Tunisien' },
+  { code:'dz', ar:'الجزائر', en:'Algeria', de:'Algerien', sv:'Algeriet' },
+  { code:'qa', ar:'قطر', en:'Qatar', de:'Katar', sv:'Qatar' },
+  { code:'kw', ar:'الكويت', en:'Kuwait', de:'Kuwait', sv:'Kuwait' },
+  { code:'lb', ar:'لبنان', en:'Lebanon', de:'Libanon', sv:'Libanon' },
+  { code:'sy', ar:'سوريا', en:'Syria', de:'Syrien', sv:'Syrien' },
+  { code:'iq', ar:'العراق', en:'Iraq', de:'Irak', sv:'Irak' },
+  { code:'ye', ar:'اليمن', en:'Yemen', de:'Jemen', sv:'Jemen' },
+  { code:'om', ar:'عُمان', en:'Oman', de:'Oman', sv:'Oman' },
+  { code:'bh', ar:'البحرين', en:'Bahrain', de:'Bahrain', sv:'Bahrain' },
+  { code:'ps', ar:'فلسطين', en:'Palestine', de:'Palästina', sv:'Palestina' },
+  { code:'tr', ar:'تركيا', en:'Turkey', de:'Türkei', sv:'Turkiet' },
+  { code:'us', ar:'أمريكا', en:'USA', de:'USA', sv:'USA' },
+  { code:'gb', ar:'بريطانيا', en:'UK', de:'Großbritannien', sv:'Storbritannien' },
+  { code:'fr', ar:'فرنسا', en:'France', de:'Frankreich', sv:'Frankrike' },
+  { code:'de', ar:'ألمانيا', en:'Germany', de:'Deutschland', sv:'Tyskland' },
+  { code:'it', ar:'إيطاليا', en:'Italy', de:'Italien', sv:'Italien' },
+  { code:'es', ar:'إسبانيا', en:'Spain', de:'Spanien', sv:'Spanien' },
+  { code:'pt', ar:'البرتغال', en:'Portugal', de:'Portugal', sv:'Portugal' },
+  { code:'nl', ar:'هولندا', en:'Netherlands', de:'Niederlande', sv:'Nederländerna' },
+  { code:'be', ar:'بلجيكا', en:'Belgium', de:'Belgien', sv:'Belgien' },
+  { code:'ch', ar:'سويسرا', en:'Switzerland', de:'Schweiz', sv:'Schweiz' },
+  { code:'se', ar:'السويد', en:'Sweden', de:'Schweden', sv:'Sverige' },
+  { code:'no', ar:'النرويج', en:'Norway', de:'Norwegen', sv:'Norge' },
+  { code:'fi', ar:'فنلندا', en:'Finland', de:'Finnland', sv:'Finland' },
+  { code:'dk', ar:'الدنمارك', en:'Denmark', de:'Dänemark', sv:'Danmark' },
+  { code:'ru', ar:'روسيا', en:'Russia', de:'Russland', sv:'Ryssland' },
+  { code:'cn', ar:'الصين', en:'China', de:'China', sv:'Kina' },
+  { code:'jp', ar:'اليابان', en:'Japan', de:'Japan', sv:'Japan' },
+  { code:'kr', ar:'كوريا الجنوبية', en:'South Korea', de:'Südkorea', sv:'Sydkorea' },
+  { code:'in', ar:'الهند', en:'India', de:'Indien', sv:'Indien' },
+  { code:'br', ar:'البرازيل', en:'Brazil', de:'Brasilien', sv:'Brasilien' },
+  { code:'ar', ar:'الأرجنتين', en:'Argentina', de:'Argentinien', sv:'Argentina' },
+  { code:'mx', ar:'المكسيك', en:'Mexico', de:'Mexiko', sv:'Mexiko' },
+  { code:'ca', ar:'كندا', en:'Canada', de:'Kanada', sv:'Kanada' },
+  { code:'au', ar:'أستراليا', en:'Australia', de:'Australien', sv:'Australien' },
+  { code:'za', ar:'جنوب أفريقيا', en:'South Africa', de:'Südafrika', sv:'Sydafrika' },
+  { code:'ng', ar:'نيجيريا', en:'Nigeria', de:'Nigeria', sv:'Nigeria' },
+  { code:'ke', ar:'كينيا', en:'Kenya', de:'Kenia', sv:'Kenya' },
+  { code:'pk', ar:'باكستان', en:'Pakistan', de:'Pakistan', sv:'Pakistan' },
+  { code:'id', ar:'إندونيسيا', en:'Indonesia', de:'Indonesien', sv:'Indonesien' },
+  { code:'th', ar:'تايلاند', en:'Thailand', de:'Thailand', sv:'Thailand' },
+  { code:'gr', ar:'اليونان', en:'Greece', de:'Griechenland', sv:'Grekland' },
+  { code:'is', ar:'آيسلندا', en:'Iceland', de:'Island', sv:'Island' },
+  { code:'pl', ar:'بولندا', en:'Poland', de:'Polen', sv:'Polen' },
+  { code:'at', ar:'النمسا', en:'Austria', de:'Österreich', sv:'Österrike' }
 ];
 
 const translations = {
   ar:{ title:'🚩 تحدي الأعلام', question:'ما اسم هذه الدولة؟', score:'النقاط', streak:'المتتالية', round:'الجولة', next:'التالي ←', correct:'✅ إجابة صحيحة!', wrong:'❌ خطأ! الجواب:', dir:'rtl' },
   en:{ title:'🚩 Flag Challenge', question:'Which country is this?', score:'Score', streak:'Streak', round:'Round', next:'Next →', correct:'✅ Correct!', wrong:'❌ Wrong! Answer:', dir:'ltr' },
-  fr:{ title:'🚩 Défi des Drapeaux', question:'Quel est ce pays?', score:'Points', streak:'Série', round:'Tour', next:'Suivant →', correct:'✅ Correct!', wrong:'❌ Faux! Réponse:', dir:'ltr' },
-  es:{ title:'🚩 Desafío de Banderas', question:'¿Qué país es este?', score:'Puntos', streak:'Racha', round:'Ronda', next:'Siguiente →', correct:'✅ ¡Correcto!', wrong:'❌ ¡Mal! Respuesta:', dir:'ltr' }
+  de:{ title:'🚩 Flaggen-Quiz', question:'Welches Land ist das?', score:'Punkte', streak:'Serie', round:'Runde', next:'Weiter →', correct:'✅ Richtig!', wrong:'❌ Falsch! Antwort:', dir:'ltr' },
+  sv:{ title:'🚩 Flaggutmaning', question:'Vilket land är detta?', score:'Poäng', streak:'Svit', round:'Runda', next:'Nästa →', correct:'✅ Rätt!', wrong:'❌ Fel! Svar:', dir:'ltr' }
 };
 
 let currentLang = 'ar';
 let soundOn = true;
+let voiceGender = 'female';
+let availableVoices = [];
 let score = 0, streak = 0, round = 1;
 let currentCountry = null;
 let answered = false;
+
+function loadVoices() {
+  availableVoices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+}
+if (window.speechSynthesis) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function pickVoice(lang) {
+  if (!availableVoices.length) return null;
+  const matches = availableVoices.filter(v => v.lang.toLowerCase().startsWith(lang.toLowerCase().split('-')[0]));
+  if (!matches.length) return null;
+  const femaleHints = /female|woman|frau|kvinna|أنثى|samantha|victoria|zira|hedda|anna|sofie|sara|hazel|tessa|karen|fiona|moira|amelie|paulina/i;
+  const maleHints = /male|man|mann|herr|رجل|david|mark|george|alex|daniel|fred|jorge|diego|hans|stefan|carl|magnus/i;
+  if (voiceGender === 'female') {
+    const f = matches.find(v => femaleHints.test(v.name));
+    if (f) return f;
+    const notMale = matches.find(v => !maleHints.test(v.name));
+    if (notMale) return notMale;
+  } else {
+    const m = matches.find(v => maleHints.test(v.name));
+    if (m) return m;
+    const notFemale = matches.find(v => !femaleHints.test(v.name));
+    if (notFemale) return notFemale;
+  }
+  return matches[0];
+}
 
 const audioCtx = window.AudioContext ? new (window.AudioContext || window.webkitAudioContext)() : null;
 function playTone(freq, duration, type='sine') {
@@ -234,12 +273,36 @@ function soundWrong() {
 }
 function soundClick() { playTone(440, 0.08); }
 
+// خريطة الأصوات البشرية الحقيقية (StreamElements Neural TTS)
+const neuralVoices = {
+  ar: { female: 'Zeina',   male: 'Zeina' },
+  en: { female: 'Joanna',  male: 'Brian' },
+  de: { female: 'Marlene', male: 'Hans' },
+  sv: { female: 'Astrid',  male: 'Astrid' }
+};
+
+let currentAudio = null;
 function speak(text, lang) {
-  if (!soundOn || !window.speechSynthesis) return;
+  if (!soundOn) return;
+  const voice = (neuralVoices[lang] || neuralVoices.en)[voiceGender];
+  const url = `https://api.streamelements.com/kappa/v2/speech?voice=${encodeURIComponent(voice)}&text=${encodeURIComponent(text)}`;
+
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  const audio = new Audio(url);
+  audio.volume = 0.9;
+  currentAudio = audio;
+  audio.play().catch(() => speakFallback(text, lang));
+}
+
+function speakFallback(text, lang) {
+  if (!window.speechSynthesis) return;
   const u = new SpeechSynthesisUtterance(text);
-  const langMap = { ar:'ar-SA', en:'en-US', fr:'fr-FR', es:'es-ES' };
+  const langMap = { ar:'ar-SA', en:'en-US', de:'de-DE', sv:'sv-SE' };
   u.lang = langMap[lang] || 'en-US';
+  const v = pickVoice(u.lang);
+  if (v) u.voice = v;
   u.rate = 0.95;
+  u.pitch = voiceGender === 'female' ? 1.15 : 0.85;
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(u);
 }
@@ -266,6 +329,7 @@ function applyLang() {
   document.querySelectorAll('.lang-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.lang === currentLang);
   });
+  updateGenderLabels();
 }
 
 function newRound() {
@@ -334,6 +398,23 @@ document.getElementById('soundToggle').onclick = (e) => {
   soundOn = !soundOn;
   e.target.textContent = soundOn ? '🔊' : '🔇';
   if (!soundOn) window.speechSynthesis?.cancel();
+};
+
+const genderLabels = {
+  ar: { female:'♀ أنثى', male:'♂ ذكر' },
+  en: { female:'♀ Female', male:'♂ Male' },
+  de: { female:'♀ Weiblich', male:'♂ Männlich' },
+  sv: { female:'♀ Kvinna', male:'♂ Man' }
+};
+function updateGenderLabels() {
+  const sel = document.getElementById('voiceGender');
+  const labels = genderLabels[currentLang] || genderLabels.en;
+  sel.options[0].text = labels.female;
+  sel.options[1].text = labels.male;
+}
+document.getElementById('voiceGender').onchange = (e) => {
+  voiceGender = e.target.value;
+  speak(currentCountry ? currentCountry[currentLang] : 'test', currentLang);
 };
 
 applyLang();
